@@ -15,7 +15,19 @@ export default function CvUpload({ onError }: CvUploadProps) {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await apiRequest("POST", "/api/cvs/upload", formData);
+
+      // Use fetch directly for file upload instead of apiRequest
+      const res = await fetch("/api/cvs/upload", {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      });
+
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error || res.statusText);
+      }
+
       return res.json();
     },
     onSuccess: () => {
