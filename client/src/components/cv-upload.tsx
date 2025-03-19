@@ -31,6 +31,7 @@ export default function CvUpload({ onError }: CvUploadProps) {
       return res.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/cvs"] });
       queryClient.invalidateQueries({ queryKey: ["/api/cvs/search"] });
     },
     onError: (error: Error) => {
