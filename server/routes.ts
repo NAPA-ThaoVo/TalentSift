@@ -5,6 +5,7 @@ import multer from "multer";
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 import mammoth from "mammoth";
 import { insertCvSchema, searchSchema } from "@shared/schema";
+import { log } from "./vite";
 
 // Extend Express.Request to include the file property from multer
 interface MulterRequest extends Request {
@@ -29,17 +30,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
+      log(`Processing file: ${req.file.originalname} (${req.file.mimetype})`);
+
       if (!ALLOWED_TYPES.includes(req.file.mimetype)) {
         return res.status(400).json({ message: "Invalid file type. Only PDF and DOCX files are allowed" });
       }
 
       let extractedText = '';
       if (req.file.mimetype === 'application/pdf') {
+        log('Processing PDF file...');
         const data = await pdfParse(req.file.buffer);
         extractedText = data.text;
+        log(`Extracted text length: ${extractedText.length} characters`);
       } else {
+        log('Processing DOCX file...');
         const result = await mammoth.extractRawText({ buffer: req.file.buffer });
         extractedText = result.value;
+        log(`Extracted text length: ${extractedText.length} characters`);
+      }
+
+      if (!extractedText.trim()) {
+        log('Warning: Extracted text is empty');
+        return res.status(400).json({ message: "Could not extract text from file" });
       }
 
       const cvData = {
@@ -50,11 +62,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const validatedData = insertCvSchema.parse(cvData);
       const cv = await storage.createCv(validatedData);
+      log(`CV stored successfully with ID: ${cv.id}`);
       res.json(cv);
     } catch (error) {
       if (error instanceof Error) {
+        log(`Error processing file: ${error.message}`);
         res.status(400).json({ message: error.message });
       } else {
+        log('Unexpected error occurred during file processing');
         res.status(500).json({ message: "An unexpected error occurred" });
       }
     }
