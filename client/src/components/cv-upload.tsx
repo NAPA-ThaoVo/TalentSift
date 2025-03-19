@@ -94,7 +94,7 @@ export default function CvUpload({ onError }: CvUploadProps) {
         <p className="text-sm text-primary mt-2">Uploading files...</p>
       )}
       <p className="text-sm text-muted-foreground mt-2">
-        Upload up to 20 files at once
+        Upload up to 50 files at once
       </p>
       {uploadMutation.isError && (
         <p className="text-sm text-destructive mt-2">
