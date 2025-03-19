@@ -12,6 +12,7 @@ interface CvUploadProps {
 }
 
 export default function CvUpload({ onError }: CvUploadProps) {
+  const { toast } = useToast(); // Added this line
   const uploadMutation = useMutation({
     mutationFn: async (files: File[]) => {
       const formData = new FormData();
