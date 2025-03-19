@@ -31,7 +31,7 @@ export default function CvUpload({ onError }: CvUploadProps) {
       }
 
       const result = await res.json();
-      
+
       // Show errors if any
       if (result.errors?.length > 0) {
         result.errors.forEach(({filename, error}: {filename: string, error: string}) => {

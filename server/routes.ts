@@ -38,7 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/cvs/upload', upload.array('files', 20), async (req: MulterRequest, res) => {
+  app.post('/api/cvs/upload', upload.array('files', 50), async (req: MulterRequest, res) => {
     try {
       if (!req.files || req.files.length === 0) {
         return res.status(400).json({ message: "No files uploaded" });
