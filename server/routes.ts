@@ -38,21 +38,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/cvs/upload', upload.array('files', 10), async (req: MulterRequest, res) => {
+  app.post('/api/cvs/upload', upload.array('files', 20), async (req: MulterRequest, res) => {
     try {
       if (!req.files || req.files.length === 0) {
         return res.status(400).json({ message: "No files uploaded" });
       }
 
       const results = [];
+      const errors = [];
+      
       for (const file of req.files as Express.Multer.File[]) {
-        // Preserve original Vietnamese filename
-        const filename = Buffer.from(file.originalname, 'latin1').toString('utf8');
-        log(`Processing file: ${filename} (${file.mimetype})`);
+        try {
+          // Preserve original Vietnamese filename
+          const filename = Buffer.from(file.originalname, 'latin1').toString('utf8');
+          log(`Processing file: ${filename} (${file.mimetype})`);
 
-        if (!ALLOWED_TYPES.includes(file.mimetype)) {
-          return res.status(400).json({ message: `Invalid file type for ${filename}. Only PDF and DOCX files are allowed` });
-        }
+          if (!ALLOWED_TYPES.includes(file.mimetype)) {
+            errors.push({ filename, error: "Invalid file type. Only PDF and DOCX files are allowed" });
+            continue;
+          }
 
       let extractedText = '';
         if (file.mimetype === 'application/pdf') {
@@ -69,6 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         if (!extractedText.trim()) {
           log('Warning: Extracted text is empty');
+          errors.push({ filename, error: "Could not extract text from file" });
           continue;
         }
 
@@ -82,9 +87,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const cv = await storage.createCv(validatedData);
         log(`CV stored successfully with ID: ${cv.id}`);
         results.push(cv);
+      } catch (err) {
+        const filename = Buffer.from(file.originalname, 'latin1').toString('utf8');
+        errors.push({ filename, error: err instanceof Error ? err.message : "Unknown error occurred" });
       }
+    }
 
-      res.json(results);
+    res.json({ 
+      success: results,
+      errors: errors
+    });
     } catch (error) {
       if (error instanceof Error) {
         log(`Error processing file: ${error.message}`);

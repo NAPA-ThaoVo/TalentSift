@@ -18,9 +18,9 @@ export default function CvUpload({ onError }: CvUploadProps) {
         formData.append("files", file);
       });
 
-      // Use fetch directly for file upload instead of apiRequest
+      // Use fetch directly for file upload instead of apiRequest  
       const res = await fetch("/api/cvs/upload", {
-        method: "POST",
+        method: "POST", 
         body: formData,
         credentials: "include"
       });
@@ -30,7 +30,16 @@ export default function CvUpload({ onError }: CvUploadProps) {
         throw new Error(error || res.statusText);
       }
 
-      return res.json();
+      const result = await res.json();
+      
+      // Show errors if any
+      if (result.errors?.length > 0) {
+        result.errors.forEach(({filename, error}: {filename: string, error: string}) => {
+          onError(`Failed to process ${filename}: ${error}`);
+        });
+      }
+
+      return result.success;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cvs"] });
