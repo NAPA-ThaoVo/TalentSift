@@ -24,6 +24,20 @@ const ALLOWED_TYPES = [
 ];
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Add new route to get all CVs
+  app.get('/api/cvs', async (_req, res) => {
+    try {
+      const cvs = await storage.getAllCvs();
+      res.json(cvs);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "An unexpected error occurred" });
+      }
+    }
+  });
+
   app.post('/api/cvs/upload', upload.single('file'), async (req: MulterRequest, res) => {
     try {
       if (!req.file) {
