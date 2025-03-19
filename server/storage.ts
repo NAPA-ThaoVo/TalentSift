@@ -35,6 +35,12 @@ export class MemStorage implements IStorage {
     return cvs;
   }
 
+  async clearAllCvs(): Promise<void> {
+    this.cvs.clear();
+    this.currentId = 1;
+    log('Cleared all CVs');
+  }
+
   async searchCvs(keywords: string[]): Promise<Cv[]> {
     log(`Searching CVs with keywords: ${keywords.join(', ')}`);
 

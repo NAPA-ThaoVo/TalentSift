@@ -5,6 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
+import { toast } from "@/components/ui/use-toast";
 
 interface CvUploadProps {
   onError: (message: string) => void;
@@ -66,41 +67,68 @@ export default function CvUpload({ onError }: CvUploadProps) {
   });
 
   return (
-    <div
-      {...getRootProps()}
-      className={`
-        border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-        transition-colors
-        ${isDragActive ? 'border-primary bg-primary/5' : 'border-border'}
-        ${uploadMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}
-      `}
-    >
-      <input {...getInputProps()} />
-      <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-      <div className="text-lg font-medium">
-        {isDragActive ? (
-          "Drop your CV here"
-        ) : (
-          <>
-            <Button variant="link" className="text-lg">Upload your CV</Button>
-            {" or drag and drop"}
-          </>
+    <div>
+      <div className="flex justify-end mb-4">
+        <Button 
+          variant="destructive"
+          onClick={async () => {
+            if (window.confirm('Are you sure you want to delete all CVs? This action cannot be undone.')) {
+              try {
+                await fetch('/api/cvs', { method: 'DELETE' });
+                queryClient.invalidateQueries({ queryKey: ['/api/cvs'] });
+                toast({
+                  title: "Success",
+                  description: "All CVs have been cleared",
+                });
+              } catch (error) {
+                toast({
+                  variant: "destructive",
+                  title: "Error",
+                  description: "Failed to clear CVs",
+                });
+              }
+            }
+          }}
+        >
+          Clear All CVs
+        </Button>
+      </div>
+      <div
+        {...getRootProps()}
+        className={`
+          border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+          transition-colors
+          ${isDragActive ? 'border-primary bg-primary/5' : 'border-border'}
+          ${uploadMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}
+        `}
+      >
+        <input {...getInputProps()} />
+        <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+        <div className="text-lg font-medium">
+          {isDragActive ? (
+            "Drop your CV here"
+          ) : (
+            <>
+              <Button variant="link" className="text-lg">Upload your CV</Button>
+              {" or drag and drop"}
+            </>
+          )}
+        </div>
+        <p className="text-sm text-muted-foreground mt-2">
+          PDF or DOCX files only (max 10MB)
+        </p>
+        {uploadMutation.isPending && (
+          <p className="text-sm text-primary mt-2">Uploading files...</p>
+        )}
+        <p className="text-sm text-muted-foreground mt-2">
+          Upload up to 50 files at once
+        </p>
+        {uploadMutation.isError && (
+          <p className="text-sm text-destructive mt-2">
+            {uploadMutation.error instanceof Error ? uploadMutation.error.message : 'Upload failed'}
+          </p>
         )}
       </div>
-      <p className="text-sm text-muted-foreground mt-2">
-        PDF or DOCX files only (max 10MB)
-      </p>
-      {uploadMutation.isPending && (
-        <p className="text-sm text-primary mt-2">Uploading files...</p>
-      )}
-      <p className="text-sm text-muted-foreground mt-2">
-        Upload up to 50 files at once
-      </p>
-      {uploadMutation.isError && (
-        <p className="text-sm text-destructive mt-2">
-          {uploadMutation.error instanceof Error ? uploadMutation.error.message : 'Upload failed'}
-        </p>
-      )}
     </div>
   );
 }

@@ -128,6 +128,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Add new route to get debug information
+  app.delete('/api/cvs', async (_req, res) => {
+    try {
+      await storage.clearAllCvs();
+      res.json({ message: "All CVs cleared successfully" });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "An unexpected error occurred" });
+      }
+    }
+  });
+
   app.get('/api/cvs/debug', async (_req, res) => {
     try {
       const allCvs = await storage.getAllCvs();
