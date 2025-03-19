@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Loader2 } from "lucide-react";
 import type { SearchQuery, Cv } from "@shared/schema";
+import { useEffect } from "react";
 
 interface ResultsListProps {
   searchQuery: SearchQuery;
@@ -17,6 +18,12 @@ export default function ResultsList({ searchQuery }: ResultsListProps) {
     queryKey: ["/api/cvs/search", searchQuery],
     enabled: searchQuery.keywords.length > 0,
   });
+
+  // Add logging to track data changes
+  useEffect(() => {
+    console.log('Current CVs:', allCvs);
+    console.log('Search Results:', searchResults);
+  }, [allCvs, searchResults]);
 
   const isLoading = isLoadingAll || isLoadingSearch;
   const results = searchQuery.keywords.length > 0 ? searchResults : allCvs;
