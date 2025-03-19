@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 import type { SearchQuery } from "@shared/schema";
 
 interface SearchBarProps {
@@ -27,6 +28,16 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
     onSearch({ keywords: newKeywords });
   };
 
+  const handleSearch = async () => {
+    try {
+      const response = await apiRequest("POST", "/api/cvs/search", { keywords });
+      const data = await response.json();
+      console.log('Search response:', data);
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
@@ -37,12 +48,16 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
             if (e.key === "Enter") {
               e.preventDefault();
               addKeyword();
+              handleSearch();
             }
           }}
           placeholder="Enter keywords to search (e.g. React, TypeScript)"
           className="flex-1"
         />
-        <Button onClick={addKeyword}>
+        <Button onClick={() => {
+          addKeyword();
+          handleSearch();
+        }}>
           <Search className="h-4 w-4 mr-2" />
           Search
         </Button>

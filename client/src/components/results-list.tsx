@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Loader2 } from "lucide-react";
 import type { SearchQuery, Cv } from "@shared/schema";
 import { useEffect } from "react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface ResultsListProps {
   searchQuery: SearchQuery;
@@ -16,14 +17,20 @@ export default function ResultsList({ searchQuery }: ResultsListProps) {
 
   const { data: searchResults, isLoading: isLoadingSearch } = useQuery<Cv[]>({
     queryKey: ["/api/cvs/search", searchQuery],
+    queryFn: async () => {
+      if (searchQuery.keywords.length === 0) return [];
+      const response = await apiRequest("POST", "/api/cvs/search", { keywords: searchQuery.keywords });
+      return response.json();
+    },
     enabled: searchQuery.keywords.length > 0,
   });
 
   // Add logging to track data changes
   useEffect(() => {
-    console.log('Current CVs:', allCvs);
+    console.log('Search Query:', searchQuery);
+    console.log('All CVs:', allCvs);
     console.log('Search Results:', searchResults);
-  }, [allCvs, searchResults]);
+  }, [searchQuery, allCvs, searchResults]);
 
   const isLoading = isLoadingAll || isLoadingSearch;
   const results = searchQuery.keywords.length > 0 ? searchResults : allCvs;

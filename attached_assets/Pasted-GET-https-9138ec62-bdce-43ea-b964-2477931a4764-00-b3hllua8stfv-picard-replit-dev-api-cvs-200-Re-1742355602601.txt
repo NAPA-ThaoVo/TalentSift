@@ -1,0 +1,26 @@
+GET https://9138ec62-bdce-43ea-b964-2477931a4764-00-b3hllua8stfv.picard.replit.dev/api/cvs 200
+
+Response Headers
+
+content-length: 3649
+content-type: application/json; charset=utf-8
+date: Wed, 19 Mar 2025 03:41:02 GMT
+etag: W/"e41-NQGcVhiymODJUFqywApaFTpFJ/g"
+replit-cluster: picard
+x-powered-by: Express
+x-robots-tag: none, noindex, noarchive, nofollow, nositelinkssearchbox, noimageindex, none, noindex, noarchive, nofollow, nositelinkssearchbox, noimageindex
+
+[{"filename":"LeÌ ThiÌ£ Thu HieÌÌn.pdf","contentType":"application/pdf","extractedText":"\n\nCONTACT\n✉\nhienle88995@gmail.com\n\n0356850584\n\ngithub.com/hienle15\n\nDaNang, VietNam\nTECHNICAL SKILLS\nPROGRAMMING LANGUAGE\nJavaScript, PHP, HTML, CSS\nFRAMEWORK\nVueJS, Laravel\nDATABASE\nMySQL, SQL Server\nTOOLS & PLATFORMS\nGit, Figma, WordPress\nEDUCATION\n•Time: 2021-2025\n•Major: Software Engineer\n•GPA: 3.3/4.0\nHOBBIES\nCoding, Listening to music, Reading books\nLE THI THU HIEN\nIT INTERN\nCAREER OBJECTIVES\nAs an IT student with a foundational understanding of web development and software\nengineering, I am eager to gain work experience through an internship opportunity. This\nexperience will allow me to apply my knowledge in a real-world setting, enhance my\nprogramming skills, and develop practical expertise in a professional environment. I am\nalways ready to learn, embrace challenges, and continuously improve myself. It would be\na valuable step toward understanding real-world software development processes,\ncollaborating with experienced professionals, and contributing to meaningful projects\nWORK EXPERIENCE\n\nFULL-STACK DEVELOPER//9/2023-present\nDZFullStack Company\n•Developed and maintained web applications using Laravel and VueJS.\n• Designed and implemented RESTful APIs to facilitate communication between\nfrontend and backend.\n•Built and optimized database queries using MySQL, ensuring data integrity and high\nperformance.\n•Created responsive and dynamic user interfaces using VueJS, Tailwind CSS, and\nBootstrap.\n•Integrated authentication and authorization mechanisms with Laravel Passport.\n•Worked with Scrum methodologies, participating in sprint planning, stand-up\nmeetings, and code reviews.\n•Conducted bug \u0000xing and performance optimizations to enhance system stability\nand speed\nPROJECT\n\nFOOD MANAGEMENT & TABLE BOOKING//3/2024-6/2024\nDescription:Food Ordering and Management System is a web-based platform that\nallows customers to select dishes, book tables, and make secure\npayments via QR codes. The system enables restaurant managers to\nmanage menus, process orders, track reservations, and optimize daily\noperations, enhancing restaurant e\u0000ciency and improving customer\nsatisfaction\nhttps://github.com/hienle15/FoodOrdering\nTeamsize:1\nPosition:Full-Stack Developer\nResponsibilities: Develop UIs with HTML, CSS, JavaScript, Vue.js & Bootstrap, build\nLaravel backends, manage MySQL, and integrate QR code payments\nTechnologies Used :\nHTML, CSS, JavaScript, Vue.js, Bootstrap, MySQL, Laravel\n\nCINEMA TICKETING//8/2024-12/2024\nDescription:Cinema Ticketing System is a web-based platform that allows users to\nsearch for movies, select showtimes, and book tickets conveniently. The\nsystem provides a seamless booking experience with real-time seat\n\nselection, secure online payments, and e-ticket generation. Additionally,\ntheater managers can adjust movie schedules, track reservations, and\noptimize ticket sales e\u0000ciently.\nhttps://github.com/hienle15/Movie-Ticket-Booking-Website\nTeamsize :1\nPositionFull-Stack Developer\nResponsibilities: Design and implement user interfaces using HTML, CSS, JavaScript,\nVue.js, and Bootstrap; develop and maintain Laravel backends; manage MySQL\ndatabases; and integrate QR code payment solutions\nTechnologies Used :\nHTML, CSS, JavaScript, Vue.js, Bootstrap, MySQL, Laravel\nOTHER\n•E-learning Programming\nhttps://github.com/hienle15/Course-\n•Laptop Shop\nhttps://github.com/hienle15/Laptop-Shopping-","id":1,"uploadedAt":"2025-03-19T03:41:02.184Z"}]
+
+
+Fetching data for queryKey: 
+(2) ["/api/cvs/search", {…}]
+0: "/api/cvs/search"
+1: Object
+keywords: Array(1)
+0: "HTML"
+length: 1
+[[Prototype]]: Array(0)
+[[Prototype]]: Object
+length: 2
+[[Prototype]]: Array(0)
