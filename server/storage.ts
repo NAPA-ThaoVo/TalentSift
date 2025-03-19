@@ -36,10 +36,13 @@ export class MemStorage implements IStorage {
   }
 
   async searchCvs(keywords: string[]): Promise<Cv[]> {
+    log(`Searching CVs with keywords: ${keywords.join(', ')}`);
+
     const results = Array.from(this.cvs.values()).map(cv => {
       const matches = keywords.reduce((count, keyword) => {
         const regex = new RegExp(keyword, 'gi');
         const matches = (cv.extractedText.match(regex) || []).length;
+        log(`CV ${cv.id} (${cv.filename}) matches '${keyword}': ${matches} times`);
         return count + matches;
       }, 0);
       return { cv, matches };
@@ -50,7 +53,7 @@ export class MemStorage implements IStorage {
       .filter(r => r.matches > 0)
       .map(r => r.cv);
 
-    log(`Search found ${filteredResults.length} matching CVs`);
+    log(`Search found ${filteredResults.length} matching CVs from total ${this.cvs.size} CVs`);
     return filteredResults;
   }
 }

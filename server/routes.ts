@@ -92,12 +92,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/cvs/search', async (req, res) => {
     try {
       const { keywords } = searchSchema.parse(req.body);
+      log(`Received search request with keywords: ${keywords.join(', ')}`);
+
       const results = await storage.searchCvs(keywords);
+      log(`Search returned ${results.length} results`);
       res.json(results);
     } catch (error) {
       if (error instanceof Error) {
+        log(`Search error: ${error.message}`);
         res.status(400).json({ message: error.message });
       } else {
+        log('Unexpected error occurred during search');
         res.status(500).json({ message: "An unexpected error occurred" });
       }
     }
