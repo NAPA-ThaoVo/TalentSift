@@ -12,9 +12,11 @@ interface CvUploadProps {
 
 export default function CvUpload({ onError }: CvUploadProps) {
   const uploadMutation = useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async (files: File[]) => {
       const formData = new FormData();
-      formData.append("file", file);
+      files.forEach(file => {
+        formData.append("files", file);
+      });
 
       // Use fetch directly for file upload instead of apiRequest
       const res = await fetch("/api/cvs/upload", {
@@ -40,9 +42,8 @@ export default function CvUpload({ onError }: CvUploadProps) {
   });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      uploadMutation.mutate(file);
+    if (acceptedFiles.length > 0) {
+      uploadMutation.mutate(acceptedFiles);
     }
   }, [uploadMutation]);
 

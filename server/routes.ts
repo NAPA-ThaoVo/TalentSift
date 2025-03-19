@@ -38,48 +38,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/cvs/upload', upload.single('file'), async (req: MulterRequest, res) => {
+  app.post('/api/cvs/upload', upload.array('files', 10), async (req: MulterRequest, res) => {
     try {
-      if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded" });
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: "No files uploaded" });
       }
 
-      // Preserve original Vietnamese filename
-      const filename = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
-      log(`Processing file: ${filename} (${req.file.mimetype})`);
+      const results = [];
+      for (const file of req.files as Express.Multer.File[]) {
+        // Preserve original Vietnamese filename
+        const filename = Buffer.from(file.originalname, 'latin1').toString('utf8');
+        log(`Processing file: ${filename} (${file.mimetype})`);
 
-      if (!ALLOWED_TYPES.includes(req.file.mimetype)) {
-        return res.status(400).json({ message: "Invalid file type. Only PDF and DOCX files are allowed" });
-      }
+        if (!ALLOWED_TYPES.includes(file.mimetype)) {
+          return res.status(400).json({ message: `Invalid file type for ${filename}. Only PDF and DOCX files are allowed` });
+        }
 
       let extractedText = '';
-      if (req.file.mimetype === 'application/pdf') {
-        log('Processing PDF file...');
-        const data = await pdfParse(req.file.buffer);
-        extractedText = data.text;
-        log(`Extracted text length: ${extractedText.length} characters`);
-      } else {
-        log('Processing DOCX file...');
-        const result = await mammoth.extractRawText({ buffer: req.file.buffer });
-        extractedText = result.value;
-        log(`Extracted text length: ${extractedText.length} characters`);
+        if (file.mimetype === 'application/pdf') {
+          log('Processing PDF file...');
+          const data = await pdfParse(file.buffer);
+          extractedText = data.text;
+          log(`Extracted text length: ${extractedText.length} characters`);
+        } else {
+          log('Processing DOCX file...');
+          const result = await mammoth.extractRawText({ buffer: file.buffer });
+          extractedText = result.value;
+          log(`Extracted text length: ${extractedText.length} characters`);
+        }
+
+        if (!extractedText.trim()) {
+          log('Warning: Extracted text is empty');
+          continue;
+        }
+
+        const cvData = {
+          filename,
+          contentType: file.mimetype,
+          extractedText
+        };
+
+        const validatedData = insertCvSchema.parse(cvData);
+        const cv = await storage.createCv(validatedData);
+        log(`CV stored successfully with ID: ${cv.id}`);
+        results.push(cv);
       }
 
-      if (!extractedText.trim()) {
-        log('Warning: Extracted text is empty');
-        return res.status(400).json({ message: "Could not extract text from file" });
-      }
-
-      const cvData = {
-        filename,
-        contentType: req.file.mimetype,
-        extractedText
-      };
-
-      const validatedData = insertCvSchema.parse(cvData);
-      const cv = await storage.createCv(validatedData);
-      log(`CV stored successfully with ID: ${cv.id}`);
-      res.json(cv);
+      res.json(results);
     } catch (error) {
       if (error instanceof Error) {
         log(`Error processing file: ${error.message}`);
