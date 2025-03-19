@@ -5,7 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface CvUploadProps {
   onError: (message: string) => void;
