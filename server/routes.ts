@@ -44,8 +44,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      // Decode the filename from URI encoding if needed
-      const filename = decodeURIComponent(req.file.originalname);
+      // Preserve original Vietnamese filename
+      const filename = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
       log(`Processing file: ${filename} (${req.file.mimetype})`);
 
       if (!ALLOWED_TYPES.includes(req.file.mimetype)) {
