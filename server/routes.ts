@@ -44,7 +44,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      log(`Processing file: ${req.file.originalname} (${req.file.mimetype})`);
+      // Decode the filename from URI encoding if needed
+      const filename = decodeURIComponent(req.file.originalname);
+      log(`Processing file: ${filename} (${req.file.mimetype})`);
 
       if (!ALLOWED_TYPES.includes(req.file.mimetype)) {
         return res.status(400).json({ message: "Invalid file type. Only PDF and DOCX files are allowed" });
@@ -69,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const cvData = {
-        filename: req.file.originalname,
+        filename,
         contentType: req.file.mimetype,
         extractedText
       };
