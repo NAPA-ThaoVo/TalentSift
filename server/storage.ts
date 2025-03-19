@@ -1,4 +1,5 @@
 import { cvs, type Cv, type InsertCv } from "@shared/schema";
+import { log } from "./vite";
 
 export interface IStorage {
   createCv(cv: InsertCv): Promise<Cv>;
@@ -13,6 +14,7 @@ export class MemStorage implements IStorage {
   constructor() {
     this.cvs = new Map();
     this.currentId = 1;
+    log('Initialized MemStorage');
   }
 
   async createCv(insertCv: InsertCv): Promise<Cv> {
@@ -23,11 +25,14 @@ export class MemStorage implements IStorage {
       uploadedAt: new Date(),
     };
     this.cvs.set(id, cv);
+    log(`Created CV with ID ${id}. Total CVs: ${this.cvs.size}`);
     return cv;
   }
 
   async getAllCvs(): Promise<Cv[]> {
-    return Array.from(this.cvs.values());
+    const cvs = Array.from(this.cvs.values());
+    log(`Getting all CVs. Total CVs: ${cvs.length}`);
+    return cvs;
   }
 
   async searchCvs(keywords: string[]): Promise<Cv[]> {
@@ -40,11 +45,15 @@ export class MemStorage implements IStorage {
       return { cv, matches };
     });
 
-    return results
+    const filteredResults = results
       .sort((a, b) => b.matches - a.matches)
       .filter(r => r.matches > 0)
       .map(r => r.cv);
+
+    log(`Search found ${filteredResults.length} matching CVs`);
+    return filteredResults;
   }
 }
 
+// Create a single instance for the entire application
 export const storage = new MemStorage();
