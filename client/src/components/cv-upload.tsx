@@ -53,7 +53,7 @@ export default function CvUpload({ onError }: CvUploadProps) {
       'application/pdf': ['.pdf'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
     },
-    maxFiles: 1
+    maxFiles: 10
   });
 
   return (
@@ -82,8 +82,11 @@ export default function CvUpload({ onError }: CvUploadProps) {
         PDF or DOCX files only (max 10MB)
       </p>
       {uploadMutation.isPending && (
-        <p className="text-sm text-primary mt-2">Uploading...</p>
+        <p className="text-sm text-primary mt-2">Uploading files...</p>
       )}
+      <p className="text-sm text-muted-foreground mt-2">
+        Upload up to 10 files at once
+      </p>
     </div>
   );
 }
