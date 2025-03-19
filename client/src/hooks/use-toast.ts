@@ -6,7 +6,7 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 5
-const TOAST_REMOVE_DELAY = Number.MAX_SAFE_INTEGER
+const TOAST_REMOVE_DELAY = 0 // Disable auto-close
 
 type ToasterToast = ToastProps & {
   id: string

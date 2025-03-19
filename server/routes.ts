@@ -46,7 +46,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const results = [];
       const errors = [];
-      
+
       for (const file of req.files as Express.Multer.File[]) {
         try {
           // Preserve original Vietnamese filename
@@ -58,45 +58,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
             continue;
           }
 
-      let extractedText = '';
-        if (file.mimetype === 'application/pdf') {
-          log('Processing PDF file...');
-          const data = await pdfParse(file.buffer);
-          extractedText = data.text;
-          log(`Extracted text length: ${extractedText.length} characters`);
-        } else {
-          log('Processing DOCX file...');
-          const result = await mammoth.extractRawText({ buffer: file.buffer });
-          extractedText = result.value;
-          log(`Extracted text length: ${extractedText.length} characters`);
+          let extractedText = '';
+          if (file.mimetype === 'application/pdf') {
+            log('Processing PDF file...');
+            const data = await pdfParse(file.buffer);
+            extractedText = data.text;
+            log(`Extracted text length: ${extractedText.length} characters`);
+          } else {
+            log('Processing DOCX file...');
+            const result = await mammoth.extractRawText({ buffer: file.buffer });
+            extractedText = result.value;
+            log(`Extracted text length: ${extractedText.length} characters`);
+          }
+
+          if (!extractedText.trim()) {
+            log('Warning: Extracted text is empty');
+            errors.push({ filename, error: "Could not extract text from file" });
+            continue;
+          }
+
+          const cvData = {
+            filename,
+            contentType: file.mimetype,
+            extractedText
+          };
+
+          const validatedData = insertCvSchema.parse(cvData);
+          const cv = await storage.createCv(validatedData);
+          log(`CV stored successfully with ID: ${cv.id}`);
+          results.push(cv);
+        } catch (err) {
+          const filename = Buffer.from(file.originalname, 'latin1').toString('utf8');
+          errors.push({ filename, error: err instanceof Error ? err.message : "Unknown error occurred" });
         }
-
-        if (!extractedText.trim()) {
-          log('Warning: Extracted text is empty');
-          errors.push({ filename, error: "Could not extract text from file" });
-          continue;
-        }
-
-        const cvData = {
-          filename,
-          contentType: file.mimetype,
-          extractedText
-        };
-
-        const validatedData = insertCvSchema.parse(cvData);
-        const cv = await storage.createCv(validatedData);
-        log(`CV stored successfully with ID: ${cv.id}`);
-        results.push(cv);
-      } catch (err) {
-        const filename = Buffer.from(file.originalname, 'latin1').toString('utf8');
-        errors.push({ filename, error: err instanceof Error ? err.message : "Unknown error occurred" });
       }
-    }
 
-    res.json({ 
-      success: results,
-      errors: errors
-    });
+      res.json({ 
+        success: results,
+        errors: errors
+      });
     } catch (error) {
       if (error instanceof Error) {
         log(`Error processing file: ${error.message}`);

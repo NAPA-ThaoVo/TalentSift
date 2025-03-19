@@ -62,7 +62,7 @@ export default function CvUpload({ onError }: CvUploadProps) {
       'application/pdf': ['.pdf'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
     },
-    maxFiles: 20
+    maxFiles: 50
   });
 
   return (
